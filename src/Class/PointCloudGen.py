@@ -19,6 +19,7 @@ class PointCloudGen:
     __CX_RGB = None
     __CY_RGB = None
     
+    # TODO: Setters for rotation matrix and translation vector
     # Rotation matrix
     __R = -np.array([[9.9997798940829263e-01, 5.0518419386157446e-03, 4.3011152014118693e-03],
                     [-5.0359919480810989e-03, 9.9998051861143999e-01, -3.6879781309514218e-03],
@@ -120,14 +121,22 @@ class PointCloudGen:
         return self.__rgb_image
 
     """
-    Private method: Calculate points for the pointcloud
+    Calculate points for the pointcloud
     TODO: Add check for None values
     """
-    def __calculate_points(self):
-        height, width, index = self.__depth_image.shape
+    def calculate_points(self, depth_image = None, rgb_image = None):
+        
+        if depth_image != None and rgb_image != None:
+            __depth_image = depth_image
+            __rgb_image = rgb_image
+        else:
+            __depth_image = self.__depth_image
+            __rgb_image = self.__rgb_image
 
-        self.__pcd = []
-        self.__colors = []
+        height, width, index = __depth_image.shape
+    
+        __pcd_depth = []
+        __pcd_colors = []
         
         for i in range(height):
             for j in range(width):
@@ -135,7 +144,7 @@ class PointCloudGen:
                     Convert the pixel from depth coordinate system
                     to depth sensor 3D coordinate system
                 """
-                z = self.__depth_image[i][j]
+                z = __depth_image[i][j]
                 x = (j - self.__CX_DEPTH) * z / self.__FX_DEPTH
                 y = (i - self.__CY_DEPTH) * z / self.__FY_DEPTH
 
@@ -153,56 +162,38 @@ class PointCloudGen:
                 i_rgb = int((y_RGB[0] * self.__FY_RGB) / z_RGB[0] + self.__CY_RGB)
 
                 # Add point to point cloud:
-                self.__pcd.append([x[0], y[0], z[0]])
+                __pcd_depth.append([x[0], y[0], z[0]])
 
                 # Add the color of the pixel if it exists:
                 if 0 <= j_rgb < width and 0 <= i_rgb < height:
-                    self.__colors.append(self.__rgb_image[i_rgb][j_rgb] / 255)
+                    __pcd_colors.append(__rgb_image[i_rgb][j_rgb] / 255)
                 else:
-                    self.__colors.append([0., 0., 0.])
+                    __pcd_colors.append([0., 0., 0.])
+        
+        return __pcd_depth, __pcd_colors
                     
     """
     Generate point cloud
     """
-    def generate_point_cloud(self):
+    def generate_point_cloud(self, pcd_depth, pcd_colors):
         
-        self.__calculate_points()
+        __pcd_o3d = o3d.geometry.PointCloud()  # create point cloud object
+        __pcd_o3d.points = o3d.utility.Vector3dVector(pcd_depth)  # set pcd_np as the point cloud points
+        __pcd_o3d.colors = o3d.utility.Vector3dVector(pcd_colors)
         
-        self.__pcd_o3d = o3d.geometry.PointCloud()  # create point cloud object
-        self.__pcd_o3d.points = o3d.utility.Vector3dVector(self.__pcd)  # set pcd_np as the point cloud points
-        self.__pcd_o3d.colors = o3d.utility.Vector3dVector(self.__colors)
-    
-    """
-    Get point cloud
-    TODO: Add check for None values
-    RETURNS
-    -------
-    pcd : open3d.geometry.PointCloud
-        Point cloud
-    """
-    def get_point_cloud(self):
-        return self.__pcd_o3d
+        return __pcd_o3d
     
     """
     Export point cloud to .ply file
     TODO: Add check for None values
     TODO: Check if the folder where the file is going to be saved exists
-    ATTRIBUTES
-    ----------
-    export_path : string
-        Path to the .ply file
-    
-    RETURNS
-    -------
-    export_path : string
-        Path to the .ply file
     """
-    def export_point_cloud(self, export_path):
+    def export_point_cloud(self, pcd_o3d, export_path):
         
         if not export_path.endswith('.ply'):
             export_path += '.ply'
             
-        o3d.io.write_point_cloud(export_path, self.__pcd_o3d)
+        o3d.io.write_point_cloud(export_path, pcd_o3d)
         
         return export_path
     
