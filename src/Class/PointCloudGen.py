@@ -194,9 +194,9 @@ class PointCloudGen:
         filtered_pcd_colors = __pcd_colors_np[mask]
 
         # mirror the point cloud:
-        #__pcd_depth, __pcd_colors = self.mirror_point_cloud(__pcd_depth, __pcd_colors)
+        filtered_pcd_depth_mirrored, filtered_pcd_colors_mirrored = self.mirror_point_cloud(filtered_pcd_depth, filtered_pcd_colors)        
 
-        return filtered_pcd_depth, filtered_pcd_colors
+        return filtered_pcd_depth_mirrored, filtered_pcd_colors_mirrored
     
     """
     Mirror point cloud
@@ -207,7 +207,7 @@ class PointCloudGen:
         __pcd_colors_mirrored = []
         
         for i in range(len(pcd_depth)):
-            __pcd_depth_mirrored.append([-pcd_depth[i][0], pcd_depth[i][1], pcd_depth[i][2]])
+            __pcd_depth_mirrored.append([pcd_depth[i][0], -pcd_depth[i][1], pcd_depth[i][2]])
             __pcd_colors_mirrored.append([pcd_colors[i][0], pcd_colors[i][1], pcd_colors[i][2]])
         
         return __pcd_depth_mirrored, __pcd_colors_mirrored
