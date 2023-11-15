@@ -32,6 +32,10 @@ class PointCloudGen:
     __rgb_image_path = None
     __depth_image = None
     __rgb_image = None
+
+    # Distance range
+    __distance_min = 10
+    __distance_max = 50
     
     
     # Constructor
@@ -124,14 +128,18 @@ class PointCloudGen:
     Calculate points for the pointcloud
     TODO: Add check for None values
     """
-    def calculate_points(self, depth_image = None, rgb_image = None):
+    def calculate_points(self, depth_image = None, rgb_image = None, distance_min = None, distance_max = None):
         
-        if depth_image != None and rgb_image != None:
+        if depth_image != None and rgb_image != None and __distance_min != None and __distance_max != None:
             __depth_image = depth_image
             __rgb_image = rgb_image
+            __distance_min = distance_min
+            __distance_max = distance_max
         else:
             __depth_image = self.__depth_image
             __rgb_image = self.__rgb_image
+            __distance_min = self.__distance_min
+            __distance_max = self.__distance_max
 
         height, width, index = __depth_image.shape
     
@@ -169,9 +177,40 @@ class PointCloudGen:
                     __pcd_colors.append(__rgb_image[i_rgb][j_rgb] / 255)
                 else:
                     __pcd_colors.append([0., 0., 0.])
+
+        # remove the background:
+        # Convert __pcd_depth to a numpy array
+        __pcd_depth_np = np.array(__pcd_depth)
+        __pcd_colors_np = np.array(__pcd_colors)
         
-        return __pcd_depth, __pcd_colors
-                    
+        # Assuming pcd_depth is your point cloud as a numpy array
+        z = __pcd_depth_np[:, 2]  # get the z-coordinates
+
+        # Create a mask of points that are within the distance range
+        mask = (z > __distance_min) & (z < __distance_max)
+
+        # Apply the mask to the point cloud
+        filtered_pcd_depth = __pcd_depth_np[mask]
+        filtered_pcd_colors = __pcd_colors_np[mask]
+
+        # mirror the point cloud:
+        #__pcd_depth, __pcd_colors = self.mirror_point_cloud(__pcd_depth, __pcd_colors)
+
+        return filtered_pcd_depth, filtered_pcd_colors
+    
+    """
+    Mirror point cloud
+    """
+    def mirror_point_cloud(self, pcd_depth, pcd_colors):
+        
+        __pcd_depth_mirrored = []
+        __pcd_colors_mirrored = []
+        
+        for i in range(len(pcd_depth)):
+            __pcd_depth_mirrored.append([-pcd_depth[i][0], pcd_depth[i][1], pcd_depth[i][2]])
+            __pcd_colors_mirrored.append([pcd_colors[i][0], pcd_colors[i][1], pcd_colors[i][2]])
+        
+        return __pcd_depth_mirrored, __pcd_colors_mirrored
     """
     Generate point cloud
     """

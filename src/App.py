@@ -25,4 +25,4 @@ if __name__ == "__main__":
     pcd_depth, pcd_rgb = pcg.calculate_points()
     pcd_o3d = pcg.generate_point_cloud(pcd_depth, pcd_rgb)
     
-    print(pcg.export_point_cloud(pcd_o3d, f"output/pointcloud/pointcloud_{datetime.now().strftime('%Y%m%d_%H:%M:%S.%f')[:-3]}"))
+    print(pcg.export_point_cloud(pcd_o3d, f"output/pointcloud/pointcloud_{datetime.now().strftime('%Y%m%d_%H_%M_%S.%f')[:-3]}"))
