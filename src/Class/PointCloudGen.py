@@ -193,9 +193,12 @@ class PointCloudGen:
         if not export_path.endswith('.ply'):
             export_path += '.ply'
             
-        o3d.io.write_point_cloud(export_path, pcd_o3d)
+        success = o3d.io.write_point_cloud(export_path, pcd_o3d)
         
-        return export_path
+        if (success):
+            return export_path
+        else:
+            return None
     
     """
     Display point cloud
