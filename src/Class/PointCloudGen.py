@@ -197,3 +197,8 @@ class PointCloudGen:
         
         return export_path
     
+    """
+    Display point cloud
+    """
+    def display_point_cloud(self, pcd_o3d):
+        o3d.visualization.draw_geometries([pcd_o3d])
