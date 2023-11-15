@@ -62,10 +62,10 @@ Returns a list of 3D points and a list of RGB colors for thoses points.
 Generate an Open3D point cloud object.  
 Returns the Open3D point cloud object.
 
-### `export_point_cloud(self, pcd_o3d: o3d.geometry.PointCloud, export_path: str) -> str`
+### `export_point_cloud(self, pcd_o3d: o3d.geometry.PointCloud, export_path: str) -> string|None`
 
 Export the Open3D point cloud to a .ply file.  
-Returns the path to the exported .ply file.
+Returns the path to the exported file on success, `None` otherwise.
 
 ### `display_point_cloud(self, pcd_o3d)`
 
