@@ -1,6 +1,7 @@
 import numpy as np
 import imageio.v3 as iio
 import open3d as o3d
+import os
 
 class PointCloudGen:
     
@@ -19,7 +20,7 @@ class PointCloudGen:
     __CX_RGB = None
     __CY_RGB = None
     
-    # TODO: Setters for rotation matrix and translation vector
+    # TODO: Setters for rotation matrix and translation vector -done mss
     # Rotation matrix
     __R = -np.array([[9.9997798940829263e-01, 5.0518419386157446e-03, 4.3011152014118693e-03],
                     [-5.0359919480810989e-03, 9.9998051861143999e-01, -3.6879781309514218e-03],
@@ -79,6 +80,14 @@ class PointCloudGen:
         self.__FY_RGB = fy
         self.__CX_RGB = ppx
         self.__CY_RGB = ppy
+
+    # Setter for rotation matrix
+    def set_rotation_matrix(self, rotation_matrix):
+        self.rotation_matrix = rotation_matrix
+
+    # Setter for translation vector
+    def set_translation_vector(self, translation_vector):
+        self.translation_vector = translation_vector
         
     """
     Set depth image path
@@ -104,24 +113,30 @@ class PointCloudGen:
     
     """
     Get depth image
-    TODO: Add check for None values
+    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
         Depth image
     """
     def get_depth_image(self):
+        if self.__depth_image is None:
+            print("Error: Depth image is not set")
+            return None
         return self.__depth_image
     
     """
     Get RGB image
-    TODO: Add check for None values
+    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
         RGB image
     """
     def get_rgb_image(self):
+        if self.__rgb_image is None:
+            print("Error: RGB image is not set")
+            return None
         return self.__rgb_image
 
     """
@@ -224,13 +239,23 @@ class PointCloudGen:
     
     """
     Export point cloud to .ply file
-    TODO: Add check for None values
-    TODO: Check if the folder where the file is going to be saved exists
+    TODO: Add check for None values -done
+    TODO: Check if the folder where the file is going to be saved exists -done
     """
+
     def export_point_cloud(self, pcd_o3d, export_path):
         
+        if pcd_o3d is None or export_path is None:
+            print("Error: point cloud or export path is None")
+            return None
+
         if not export_path.endswith('.ply'):
             export_path += '.ply'
+    
+        # Check if the directory exists and create it if it doesn't
+        directory = os.path.dirname(export_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
             
         o3d.io.write_point_cloud(export_path, pcd_o3d)
         
