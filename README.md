@@ -40,7 +40,5 @@ pip install -r requirements.txt
 - There are layers in the pointcloud.
 
 ## Sources
-### GUI
-
 ### Pointcloud
 [Source for the pointcloud](https://betterprogramming.pub/introduction-to-point-cloud-processing-dbda9b167534)
