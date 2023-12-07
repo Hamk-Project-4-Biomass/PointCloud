@@ -15,7 +15,7 @@ For ease of use, the code is written in a class. The [documentation](src/Class/P
 
 ## Examples
 ### Images
-There are 2 sets of images. The [original images](images/originalImages): these images that are taken with the camera and the camera software itself. The [second set of images](images/databomb2/) are images created with the application of the project. This 
+There are 2 sets of images. The [original images](images/originalImages): these images that are taken with the camera and the camera software itself. The [second set of images](images/databomb2/) are images created with the application of the project.
 
 ### Used libraries
 - imageio
