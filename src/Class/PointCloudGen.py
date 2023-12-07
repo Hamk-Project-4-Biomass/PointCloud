@@ -1,6 +1,7 @@
 import numpy as np
 import imageio.v3 as iio
 import open3d as o3d
+import os
 
 class PointCloudGen:
     
@@ -19,7 +20,7 @@ class PointCloudGen:
     __CX_RGB = None
     __CY_RGB = None
     
-    # TODO: Setters for rotation matrix and translation vector
+    # TODO: Setters for rotation matrix and translation vector -done mss
     # Rotation matrix
     __R = -np.array([[9.9997798940829263e-01, 5.0518419386157446e-03, 4.3011152014118693e-03],
                     [-5.0359919480810989e-03, 9.9998051861143999e-01, -3.6879781309514218e-03],
@@ -32,6 +33,10 @@ class PointCloudGen:
     __rgb_image_path = None
     __depth_image = None
     __rgb_image = None
+
+    # Distance range
+    __distance_min = 10
+    __distance_max = 50
     
     
     # Constructor
@@ -75,6 +80,14 @@ class PointCloudGen:
         self.__FY_RGB = fy
         self.__CX_RGB = ppx
         self.__CY_RGB = ppy
+
+    # Setter for rotation matrix
+    def set_rotation_matrix(self, rotation_matrix):
+        self.rotation_matrix = rotation_matrix
+
+    # Setter for translation vector
+    def set_translation_vector(self, translation_vector):
+        self.translation_vector = translation_vector
         
     """
     Set depth image path
@@ -100,38 +113,48 @@ class PointCloudGen:
     
     """
     Get depth image
-    TODO: Add check for None values
+    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
         Depth image
     """
     def get_depth_image(self):
+        if self.__depth_image is None:
+            print("Error: Depth image is not set")
+            return None
         return self.__depth_image
     
     """
     Get RGB image
-    TODO: Add check for None values
+    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
         RGB image
     """
     def get_rgb_image(self):
+        if self.__rgb_image is None:
+            print("Error: RGB image is not set")
+            return None
         return self.__rgb_image
 
     """
     Calculate points for the pointcloud
     TODO: Add check for None values
     """
-    def calculate_points(self, depth_image = None, rgb_image = None):
+    def calculate_points(self, depth_image = None, rgb_image = None, distance_min = None, distance_max = None):
         
-        if depth_image != None and rgb_image != None:
+        if depth_image != None and rgb_image != None and __distance_min != None and __distance_max != None:
             __depth_image = depth_image
             __rgb_image = rgb_image
+            __distance_min = distance_min
+            __distance_max = distance_max
         else:
             __depth_image = self.__depth_image
             __rgb_image = self.__rgb_image
+            __distance_min = self.__distance_min
+            __distance_max = self.__distance_max
 
         height, width, index = __depth_image.shape
     
@@ -169,9 +192,40 @@ class PointCloudGen:
                     __pcd_colors.append(__rgb_image[i_rgb][j_rgb] / 255)
                 else:
                     __pcd_colors.append([0., 0., 0.])
+
+        # remove the background:
+        # Convert __pcd_depth to a numpy array
+        __pcd_depth_np = np.array(__pcd_depth)
+        __pcd_colors_np = np.array(__pcd_colors)
         
-        return __pcd_depth, __pcd_colors
-                    
+        # Assuming pcd_depth is your point cloud as a numpy array
+        z = __pcd_depth_np[:, 2]  # get the z-coordinates
+
+        # Create a mask of points that are within the distance range
+        mask = (z > __distance_min) & (z < __distance_max)
+
+        # Apply the mask to the point cloud
+        filtered_pcd_depth = __pcd_depth_np[mask]
+        filtered_pcd_colors = __pcd_colors_np[mask]
+
+        # mirror the point cloud:
+        filtered_pcd_depth_mirrored, filtered_pcd_colors_mirrored = self.mirror_point_cloud(filtered_pcd_depth, filtered_pcd_colors)        
+
+        return filtered_pcd_depth_mirrored, filtered_pcd_colors_mirrored
+    
+    """
+    Mirror point cloud
+    """
+    def mirror_point_cloud(self, pcd_depth, pcd_colors):
+        
+        __pcd_depth_mirrored = []
+        __pcd_colors_mirrored = []
+        
+        for i in range(len(pcd_depth)):
+            __pcd_depth_mirrored.append([pcd_depth[i][0], -pcd_depth[i][1], pcd_depth[i][2]])
+            __pcd_colors_mirrored.append([pcd_colors[i][0], pcd_colors[i][1], pcd_colors[i][2]])
+        
+        return __pcd_depth_mirrored, __pcd_colors_mirrored
     """
     Generate point cloud
     """
@@ -185,13 +239,23 @@ class PointCloudGen:
     
     """
     Export point cloud to .ply file
-    TODO: Add check for None values
-    TODO: Check if the folder where the file is going to be saved exists
+    TODO: Add check for None values -done
+    TODO: Check if the folder where the file is going to be saved exists -done
     """
+
     def export_point_cloud(self, pcd_o3d, export_path):
         
+        if pcd_o3d is None or export_path is None:
+            print("Error: point cloud or export path is None")
+            return None
+
         if not export_path.endswith('.ply'):
             export_path += '.ply'
+    
+        # Check if the directory exists and create it if it doesn't
+        directory = os.path.dirname(export_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
             
         success = o3d.io.write_point_cloud(export_path, pcd_o3d)
         
