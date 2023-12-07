@@ -81,11 +81,23 @@ class PointCloudGen:
         self.__CX_RGB = ppx
         self.__CY_RGB = ppy
 
-    # Setter for rotation matrix
+    """
+    Set rotation matrix of the camera
+    ATTRIBUTES
+    ----------
+    rotation_matrix : numpy array
+        Rotation matrix
+    """
     def set_rotation_matrix(self, rotation_matrix):
         self.rotation_matrix = rotation_matrix
 
-    # Setter for translation vector
+    """
+    Set translation vector of the camera
+    ATTRIBUTES
+    ----------
+    translation_vector : numpy array
+        Translation vector
+    """
     def set_translation_vector(self, translation_vector):
         self.translation_vector = translation_vector
         
@@ -215,6 +227,18 @@ class PointCloudGen:
     
     """
     Mirror point cloud
+    ATTRIBUTES
+    ----------
+    pcd_depth : numpy array
+        Point cloud depth
+    pcd_colors : numpy array
+        Point cloud colors
+    RETURNS
+    -------
+    pcd_depth_mirrored : numpy array
+        Point cloud depth mirrored
+    pcd_colors_mirrored : numpy array
+        Point cloud colors mirrored
     """
     def mirror_point_cloud(self, pcd_depth, pcd_colors):
         
@@ -226,8 +250,19 @@ class PointCloudGen:
             __pcd_colors_mirrored.append([pcd_colors[i][0], pcd_colors[i][1], pcd_colors[i][2]])
         
         return __pcd_depth_mirrored, __pcd_colors_mirrored
+
     """
     Generate point cloud
+    ATTRIBUTES
+    ----------
+    pcd_depth : numpy array
+        Point cloud depth
+    pcd_colors : numpy array
+        Point cloud colors
+    RETURNS
+    -------
+    pcd_o3d : open3d.geometry.PointCloud
+        Point cloud object
     """
     def generate_point_cloud(self, pcd_depth, pcd_colors):
         
@@ -241,8 +276,17 @@ class PointCloudGen:
     Export point cloud to .ply file
     TODO: Add check for None values -done
     TODO: Check if the folder where the file is going to be saved exists -done
+    ATTRIBUTES
+    ----------
+    pcd_o3d : open3d.geometry.PointCloud
+        Point cloud object
+    export_path : string
+        Path to the .ply file
+    RETURNS
+    -------
+    export_path : string
+        Path to the .ply file
     """
-
     def export_point_cloud(self, pcd_o3d, export_path):
         
         if pcd_o3d is None or export_path is None:
@@ -265,7 +309,11 @@ class PointCloudGen:
             return None
     
     """
-    Display point cloud
+    Display point cloud in a open3d window
+    ATTRIBUTES
+    ----------
+    pcd_o3d : open3d.geometry.PointCloud
+        Point cloud object
     """
     def display_point_cloud(self, pcd_o3d):
         o3d.visualization.draw_geometries([pcd_o3d])
