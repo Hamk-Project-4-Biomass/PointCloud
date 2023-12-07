@@ -67,7 +67,7 @@ Returns the Open3D point cloud object.
 Export the Open3D point cloud to a .ply file.  
 Returns the path to the exported file on success, `None` otherwise.
 
-### `display_point_cloud(self, pcd_o3d)`
+### `display_point_cloud(self, pcd_o3d: o3d.geometry.PointCloud)`
 
 Display the Open3D point cloud object.
 
