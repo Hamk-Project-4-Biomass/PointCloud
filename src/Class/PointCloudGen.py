@@ -257,7 +257,15 @@ class PointCloudGen:
         if not os.path.exists(directory):
             os.makedirs(directory)
             
-        o3d.io.write_point_cloud(export_path, pcd_o3d)
+        success = o3d.io.write_point_cloud(export_path, pcd_o3d)
         
-        return export_path
+        if (success):
+            return export_path
+        else:
+            return None
     
+    """
+    Display point cloud
+    """
+    def display_point_cloud(self, pcd_o3d):
+        o3d.visualization.draw_geometries([pcd_o3d])
