@@ -20,7 +20,6 @@ class PointCloudGen:
     __CX_RGB = None
     __CY_RGB = None
     
-    # TODO: Setters for rotation matrix and translation vector -done mss
     # Rotation matrix
     __R = -np.array([[9.9997798940829263e-01, 5.0518419386157446e-03, 4.3011152014118693e-03],
                     [-5.0359919480810989e-03, 9.9998051861143999e-01, -3.6879781309514218e-03],
@@ -125,7 +124,6 @@ class PointCloudGen:
     
     """
     Get depth image
-    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
@@ -139,7 +137,6 @@ class PointCloudGen:
     
     """
     Get RGB image
-    TODO: Add check for None values -done
     RETURNS
     -------
     image : numpy array
@@ -153,7 +150,6 @@ class PointCloudGen:
 
     """
     Calculate points for the pointcloud
-    TODO: Add check for None values
     """
     def calculate_points(self, depth_image = None, rgb_image = None, distance_min = None, distance_max = None):
         
@@ -274,8 +270,6 @@ class PointCloudGen:
     
     """
     Export point cloud to .ply file
-    TODO: Add check for None values -done
-    TODO: Check if the folder where the file is going to be saved exists -done
     ATTRIBUTES
     ----------
     pcd_o3d : open3d.geometry.PointCloud
