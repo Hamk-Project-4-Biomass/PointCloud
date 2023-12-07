@@ -34,6 +34,14 @@ Set depth camera parameters.
 
 Set RGB camera parameters.
 
+### `set_rotation_matrix(self, r: np.ndarray)`
+
+Set the rotation matrix.
+
+### `set_translation_vector(self, t: np.ndarray)`
+
+Set the translation vector.
+
 ### `set_depth_image_path(self, path: str)`
 
 Set the path to the depth image.
@@ -56,6 +64,10 @@ Returns the RGB image as a numpy array.
 
 Calculate 3D points for the point cloud based on depth and RGB images.  
 Returns a list of 3D points and a list of RGB colors for thoses points.
+
+### `mirror_point_cloud(self, pcd_depth: List[List[float]], pcd_colors: List[List[float]]) -> list, list`
+
+Mirror the point cloud arrays.
 
 ### `generate_point_cloud(self, pcd_depth: List[List[float]], pcd_colors: List[List[float]]) -> o3d.geometry.PointCloud`
 
